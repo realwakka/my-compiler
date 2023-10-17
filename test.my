@@ -1,0 +1,11 @@
+fn fib(a) {
+  if a > 1 {
+    3
+  } else  {
+    5
+  }
+}
+
+fn main(){
+  fib(4)
+}
