@@ -4,10 +4,9 @@ use inkwell::builder::Builder;
 use inkwell::context::Context;
 use inkwell::execution_engine::{ExecutionEngine, JitFunction};
 use inkwell::module::Module;
-use inkwell::OptimizationLevel;
 use inkwell::basic_block::BasicBlock;
-use inkwell::values::{BasicMetadataValueEnum, AnyValue};
-use inkwell::types::{BasicMetadataTypeEnum, IntType, BasicType, IntMathType};
+use inkwell::values::BasicMetadataValueEnum;
+use inkwell::types::BasicMetadataTypeEnum;
 use inkwell::values::{FunctionValue, IntValue};
 use inkwell::IntPredicate;
 
@@ -20,7 +19,7 @@ pub struct Code {
 impl Code {
     pub fn codegen<'ctx>(&self, cg: &mut CodeGen<'ctx>) {
 	for f in &self.functions {
-	    f.codegen(cg);
+	    f.codegen(cg).unwrap();
 	}
     }
 }
@@ -35,7 +34,7 @@ pub struct Fn {
 impl<'ctx> Fn {
     fn codegen(&self, cg: &mut CodeGen<'ctx>) -> anyhow::Result<()> {
         let i64_type = cg.context.i64_type();	
-	let args = self.args.iter().map(|arg| i64_type.into()).collect::<Vec<BasicMetadataTypeEnum<'ctx>>>();
+	let args = self.args.iter().map(|_arg| i64_type.into()).collect::<Vec<BasicMetadataTypeEnum<'ctx>>>();
         let fn_type = i64_type.fn_type(&args[..], false);
         let function = cg.module.add_function(&self.name, fn_type, None);
 	cg.functions.insert(self.name.clone(), function);
@@ -132,17 +131,17 @@ fn expr_codegen<'ctx>(expr : &Expr, cg: &mut CodeGen<'ctx>, function: FunctionVa
 	    let else_block = cg.context.append_basic_block(function, "else");
 	    let merge_block = cg.context.append_basic_block(function, "merge");
 	    
-	    let cond_branch = cg.builder.build_conditional_branch(
+	    let _cond_branch = cg.builder.build_conditional_branch(
 		cond_val, then_block, else_block).unwrap();
 
 	    cg.builder.position_at_end(then_block);
 	    let then_val = expr_codegen(a, cg, function)?;
-	    let br = cg.builder.build_unconditional_branch(merge_block);
+	    let _br = cg.builder.build_unconditional_branch(merge_block);
 	    
 	    
 	    cg.builder.position_at_end(else_block);
 	    let else_val = expr_codegen(b, cg, function)?;
-	    let br = cg.builder.build_unconditional_branch(merge_block);
+	    let _br = cg.builder.build_unconditional_branch(merge_block);
 
 	    cg.builder.position_at_end(merge_block);
 	    let phi = cg.builder.build_phi(cg.context.i32_type(), "phi")?;
