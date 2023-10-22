@@ -13,14 +13,16 @@ fn main() -> anyhow::Result<()> {
 
     let context = Context::create();
     let module = context.create_module("sum");
-    let execution_engine = module.create_jit_execution_engine(OptimizationLevel::None).unwrap();
+    let execution_engine = module
+        .create_jit_execution_engine(OptimizationLevel::None)
+        .unwrap();
     let mut codegen = ast::CodeGen {
         context: &context,
         module,
         builder: context.create_builder(),
         execution_engine,
-	function_args: HashMap::new(),
-	functions: HashMap::new(),
+        function_args: HashMap::new(),
+        functions: HashMap::new(),
     };
 
     let code = parser::code_parser().parse(src).unwrap();
@@ -31,7 +33,7 @@ fn main() -> anyhow::Result<()> {
 
     let main_fn = codegen.compile().unwrap();
     unsafe {
-	println!("main func returned: {:?}", main_fn.call());
+        println!("main func returned: {:?}", main_fn.call());
     }
 
     Ok(())

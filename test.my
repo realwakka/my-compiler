@@ -1,1 +1,10 @@
-fn main(){call(1)}
+fn fib(a) {
+  if a < 3 {
+    1
+  } else {
+    fib(a-1) + fib(a-2)
+  }
+}
+
+fn main(){fib(10)}
+
