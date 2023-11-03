@@ -93,22 +93,6 @@ fn expr_parser() -> impl Parser<char, ast::Expr, Error = Simple<char>> {
     expr
 }
 
-fn call_parser<E: chumsky::Parser<char, ast::Expr, Error = Simple<char>> + Clone>(
-    expr: E,
-) -> impl Parser<char, ast::Expr, Error = Simple<char>> {
-    let call = text::ident()
-        .padded()
-        .then(
-            expr.clone()
-                .separated_by(just(','))
-                .allow_trailing()
-                .delimited_by(just('('), just(')')),
-        )
-        .map(|(f, args)| ast::Expr::Call(f, args));
-
-    call
-}
-
 #[test]
 fn test_var() {
     let ident = text::ident::<char, Simple<char>>().padded();
@@ -122,18 +106,11 @@ fn test_var() {
                 .allow_trailing()
                 .delimited_by(just('('), just(')')),
         )
-        .map(|(f, args)| ast::Expr::Call(f, Vec::new()));
+        .map(|(f, _args)| ast::Expr::Call(f, Vec::new()));
 
     let p = var.or(call);
 
     println!("{:?}", p.parse("asdf()"));
-}
-
-#[test]
-fn test_call_parser() {
-    let var = text::ident().map(|s| ast::Expr::Var(s)).padded();
-    let expr = call_parser(var).parse("main(a, b, c)").unwrap();
-    println!("{:?}", expr);
 }
 
 #[test]

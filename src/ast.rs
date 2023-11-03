@@ -4,7 +4,7 @@ use inkwell::basic_block::BasicBlock;
 use inkwell::builder::Builder;
 use inkwell::context::Context;
 use inkwell::execution_engine::{ExecutionEngine, JitFunction};
-use inkwell::module::{Linkage, Module};
+use inkwell::module::Module;
 use inkwell::types::BasicMetadataTypeEnum;
 use inkwell::values::BasicMetadataValueEnum;
 use inkwell::values::{FunctionValue, IntValue};
@@ -199,7 +199,7 @@ fn expr_codegen<'ctx>(
 
             Ok(phi.as_basic_value().into_int_value())
         }
-        _ => todo!(),
+        // _ => todo!(),
     }
 }
 

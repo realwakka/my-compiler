@@ -6,5 +6,5 @@ fn fib(a) {
   }
 }
 
-fn main(){fib(10)}
+fn main(){fib(45)}
 

@@ -14,7 +14,7 @@ fn main() -> anyhow::Result<()> {
     let context = Context::create();
     let module = context.create_module("sum");
     let execution_engine = module
-        .create_jit_execution_engine(OptimizationLevel::None)
+        .create_jit_execution_engine(OptimizationLevel::Aggressive)
         .unwrap();
     let mut codegen = ast::CodeGen {
         context: &context,
@@ -32,9 +32,14 @@ fn main() -> anyhow::Result<()> {
     codegen.module.print_to_file("test.ll").unwrap();
 
     let main_fn = codegen.compile().unwrap();
+
+    let start = std::time::Instant::now();
     unsafe {
         println!("main func returned: {:?}", main_fn.call());
     }
+    let duration = start.elapsed();
+    println!("Time elapsed in expensive_function() is: {:?}", duration);
+    
 
     Ok(())
 }
